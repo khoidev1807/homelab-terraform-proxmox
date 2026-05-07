@@ -21,8 +21,8 @@ pveum user token add terraform@pve provider --privsep=0
 2. Create a ssh key for terraform user on the server
 do this on local development machine
 
-ssh-keygen -t ed25519 -f ~/.ssh/proxmox_terraform -N ""
+ssh-keygen -t ed25519 -f ./ssh-keys/proxmox_terraform -N ""
 
-ssh-copy-id -i ~/.ssh/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdance.com
+ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdance.com
 
 

@@ -43,15 +43,8 @@ resource "proxmox_virtual_environment_vm" "omada_controller" {
   }
 
   initialization {
-    interface = "scsi0"
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-        gateway = "192.168.11.1"
-      }
-    }
-    user_data_file_id  = proxmox_virtual_environment_file.user_data_cloud_config.id
     network_data_file_id = proxmox_virtual_environment_file.network_config.id
+    user_data_file_id    = proxmox_virtual_environment_file.user_data_cloud_config.id
   }
 
   cpu {
@@ -117,7 +110,12 @@ config:
   - type: physical
     name: ens18
     subnets:
-      - type: dhcp
+      - type: static
+        address: 192.168.11.10/24
+        gateway: 192.168.11.1
+        dns_nameservers:
+        - 192.168.11.1
+        - 8.8.8.8
 EOF
     file_name = "network-config.yaml"
   }
