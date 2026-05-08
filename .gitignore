@@ -28,3 +28,5 @@ terraform.rc
 
 # Ignore SSH keys (if you store them in a directory named "ssh-keys")
 ssh-keys/**
+
+**/backups/**

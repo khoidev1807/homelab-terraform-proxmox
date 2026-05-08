@@ -4,12 +4,12 @@ resource "tls_private_key" "ubuntu_resolute_ssh_key" {
 }
 
 
-resource "proxmox_download_file" "ubuntu_resolute_cloud_image" {
+resource "proxmox_download_file" "ubuntu_noble_cloud_image" {
   node_name    = "node1"
   content_type = "iso"
   datastore_id = "local"
-  file_name    = "resolute-server-cloudimg-amd64.img"
-  url          = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img"
+  file_name    = "noble-server-cloudimg-amd64.img"
+  url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 }
 
 
@@ -32,10 +32,11 @@ resource "proxmox_virtual_environment_vm" "omada_controller" {
     file_format  = "raw"
     type         = "4m"
   }
+  
 
   disk {
-    datastore_id = "local-lvm"
-    file_id      = proxmox_download_file.ubuntu_resolute_cloud_image.id
+    datastore_id = "datadrive"
+    file_id      = proxmox_download_file.ubuntu_noble_cloud_image.id
     interface    = "virtio0"
     iothread     = true
     discard      = "on"
@@ -43,12 +44,18 @@ resource "proxmox_virtual_environment_vm" "omada_controller" {
   }
 
   initialization {
-    network_data_file_id = proxmox_virtual_environment_file.network_config.id
+    ip_config {
+      ipv4 {
+        address = "192.168.11.10/24"
+        gateway = "192.168.11.1"
+      }
+    }
     user_data_file_id    = proxmox_virtual_environment_file.user_data_cloud_config.id
   }
 
   cpu {
     cores = 2
+    type = "host"
   }
 
   network_device {
@@ -60,8 +67,8 @@ resource "proxmox_virtual_environment_vm" "omada_controller" {
   }
 
   memory {
-    dedicated = 2048
-    floating  = 2048
+    dedicated = 3072
+    floating  = 3072
   }
 
 }
@@ -98,25 +105,3 @@ EOF
 }
 
 
-resource "proxmox_virtual_environment_file" "network_config" {
-  content_type = "snippets"
-  datastore_id = "local"
-  node_name    = "node1"
-
-  source_raw {
-    data      = <<EOF
-version: 1
-config:
-  - type: physical
-    name: ens18
-    subnets:
-      - type: static
-        address: 192.168.11.10/24
-        gateway: 192.168.11.1
-        dns_nameservers:
-        - 192.168.11.1
-        - 8.8.8.8
-EOF
-    file_name = "network-config.yaml"
-  }
-}
