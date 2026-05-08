@@ -2,13 +2,14 @@ THIS MODULE IS FOR CREATING OMADA-CONTROLLER
 refs
 
 - https://registry.terraform.io/providers/bpg/proxmox/latest/docs#api-token-authentication
+- https://cloud-images.ubuntu.com/
 
 WHAT DOES THIS SOLVE ?
 we can programaticly create cloud-init omada-controller with terraform
 
-Requisites:
-do this in proxmox server
+
 1. Create a user for terraform in proxmox
+do this in proxmox server
 
 pveum user add terraform@pve
 
@@ -26,6 +27,7 @@ ssh-keygen -t ed25519 -f ./ssh-keys/proxmox_terraform -N ""
 ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdance.com
 
 3. install omada-controller after server provisoned
+do this in the vm
 
 sudo apt update && sudo apt upgrade -y
 

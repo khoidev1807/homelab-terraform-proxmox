@@ -1,5 +1,5 @@
 # Generate an SSH key pair (only needs to be created once)
-resource "tls_private_key" "ubuntu_resolute_ssh_key" {
+resource "tls_private_key" "omada_controller_ssh_key" {
   algorithm = "ED25519"
 }
 
@@ -11,7 +11,6 @@ resource "proxmox_download_file" "ubuntu_noble_cloud_image" {
   file_name    = "noble-server-cloudimg-amd64.img"
   url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 }
-
 
 
 
@@ -88,7 +87,7 @@ users:
       - sudo
     shell: /bin/bash
     ssh_authorized_keys:
-      - ${trimspace(tls_private_key.ubuntu_resolute_ssh_key.public_key_openssh)}
+      - ${trimspace(tls_private_key.omada_controller_ssh_key.public_key_openssh)}
     sudo: ALL=(ALL) NOPASSWD:ALL
 package_update: true
 packages:
