@@ -3,7 +3,7 @@ resource "proxmox_download_file" "talos_vm_image" {
   content_type = "iso"
   datastore_id = "local"
   file_name    = "talos-amd64-secureboot.iso"
-  url          = "https://factory.talos.dev/image/17bd088c71807ae797c16e85efb133b27814f1a333312bf597c3d4bc6f7c13d7/v1.13.0/nocloud-amd64-secureboot.iso"
+  url          = "https://factory.talos.dev/image/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f/v1.13.0/nocloud-amd64-secureboot.iso"
 
 }
 
@@ -63,7 +63,8 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   memory {
-    dedicated = 4096
+    dedicated = 6144
+    floating = 6144
   }
 
 }
@@ -126,5 +127,6 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
 
   memory {
     dedicated = 8192
+    floating = 8192
   }
 }

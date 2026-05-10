@@ -4,6 +4,8 @@ refs
 - https://registry.terraform.io/providers/bpg/proxmox/latest/docs#api-token-authentication
 - https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/proxmox#proxmox
 - https://factory.talos.dev/
+- https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/gateway-api/
+
 WHAT DOES THIS SOLVE ?
 we can programaticly create talos cluster with one controll-plane and n worker nodes with terraform
 
@@ -29,9 +31,13 @@ ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdan
 
 - https://factory.talos.dev/
 
+- qemu-agent (for proxmox)
+- iscsi-tools (for longhorn)
+- util-linux-tools (for longhorn)
+
 4. Set up talos config with qemu-agent image latest version
 
-talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs  --install-image factory.talos.dev/nocloud-installer-secureboot/17bd088c71807ae797c16e85efb133b27814f1a333312bf597c3d4bc6f7c13d7:v1.13.0 --config-patch @./talos-configs/patches/cilium-setup.yaml --kubernetes-version 1.36.0
+talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/patch.yaml  --kubernetes-version 1.36.0
 
 5. Set up control plane node 
 
@@ -39,10 +45,17 @@ talosctl apply-config --insecure --nodes 192.168.11.11 --file ./talos-configs/co
 
 talosctl bootstrap --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig
 
-talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig ./talos-configs/config
+rm -rf ~/.kube/*
+
+talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig ./talos-configs/config\
+
+
 6. Install Cilium with helm 
 
+
 helm repo add cilium https://helm.cilium.io/
+
+helm repo update
 
 helm install \
     cilium \
@@ -56,11 +69,18 @@ helm install \
     --set cgroup.autoMount.enabled=false \
     --set cgroup.hostRoot=/sys/fs/cgroup \
     --set k8sServiceHost=localhost \
-    --set k8sServicePort=7445
+    --set k8sServicePort=7445 \
     --set=gatewayAPI.enabled=true \
     --set=gatewayAPI.enableAlpn=true \
     --set=gatewayAPI.enableAppProtocol=true
 
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_tlsroutes.yaml
 
    
 6. Set up worker nodes
@@ -70,4 +90,13 @@ talosctl apply-config --insecure --nodes 192.168.11.12 --file ./talos-configs/wo
 talosctl apply-config --insecure --nodes 192.168.11.13 --file ./talos-configs/worker.yaml
 
 talosctl apply-config --insecure --nodes 192.168.11.14 --file ./talos-configs/worker.yaml
+
+7. Set up longhorn
+
+helm repo add longhorn https://charts.longhorn.io
+
+helm repo update
   
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.9.0
+
+
