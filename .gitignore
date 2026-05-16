@@ -30,4 +30,4 @@ terraform.rc
 ssh-keys/**
 
 **/backups/**
-**/talos-configs/**
+**/talos-configs/configs/**

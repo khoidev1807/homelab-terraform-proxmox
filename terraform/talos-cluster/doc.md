@@ -37,18 +37,17 @@ ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdan
 
 4. Set up talos config with qemu-agent image latest version
 
-talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/patch.yaml  --kubernetes-version 1.36.0
+talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs/configs/  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/initital-setup.yaml  --kubernetes-version 1.36.0
 
 5. Set up control plane node 
 
-talosctl apply-config --insecure --nodes 192.168.11.11 --file ./talos-configs/controlplane.yaml
+talosctl apply-config --insecure --nodes 192.168.11.11 --file ./talos-configs/configs/controlplane.yaml
 
-talosctl bootstrap --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig
+talosctl bootstrap --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/configs/talosconfig
 
 rm -rf ~/.kube/*
 
-talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig ./talos-configs/config
-
+talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/configs/talosconfig ./talos-configs/configs/config
 
 6. Install Cilium with helm 
 
@@ -59,25 +58,50 @@ kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/re
 
 helm repo update
 
-helm install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/values/cilium.values.yaml 
+helm upgrade --install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/values/cilium.values.yaml 
 
 6. Set up worker nodes
 
-talosctl apply-config --insecure --nodes 192.168.11.12 --file ./talos-configs/worker.yaml
+talosctl apply-config --insecure --nodes 192.168.11.12 --file ./talos-configs/configs/worker.yaml
 
-talosctl apply-config --insecure --nodes 192.168.11.13 --file ./talos-configs/worker.yaml
+talosctl apply-config --insecure --nodes 192.168.11.13 --file ./talos-configs/configs/worker.yaml
 
-talosctl apply-config --insecure --nodes 192.168.11.14 --file ./talos-configs/worker.yaml
+talosctl apply-config --insecure --nodes 192.168.11.14 --file ./talos-configs/configs/worker.yaml
 
-7. Set up longhorn
+7. set up metrics-server and kubelet-serving-cert-approver
+
+talosctl machineconfig patch ./talos-configs/configs/controlplane.yaml --patch @./talos-configs/patches/post-setup.yaml -o ./talos-configs/configs/controlplane.yaml
+
+talosctl machineconfig patch ./talos-configs/configs/worker.yaml --patch @./talos-configs/patches/post-setup.yaml -o ./talos-configs/configs/worker.yaml
+
+talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoints 192.168.11.11 --nodes 192.168.11.11 --file ./talos-configs/configs/controlplane.yaml
+
+talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoints 192.168.11.12 --nodes 192.168.11.12 --file ./talos-configs/configs/worker.yaml
+
+talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoints 192.168.11.13 --nodes 192.168.11.13 --file ./talos-configs/configs/worker.yaml
+
+talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoints 192.168.11.14 --nodes 192.168.11.14 --file ./talos-configs/configs/worker.yaml
+
+
+kubectl certificate approve $(kubectl get csr -o name)
+
+kubectl apply -f https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+
+8. Set up longhorn
 
 helm repo add longhorn https://charts.longhorn.io
 
 helm repo update
   
-helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/values/longhorn.values.yaml 
+helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/values/longhorn.values.yaml 
 
-8. set up custom crd
+9. set up custom crd
 
 kubectl apply -f ./resources/
 
+
+
+ 

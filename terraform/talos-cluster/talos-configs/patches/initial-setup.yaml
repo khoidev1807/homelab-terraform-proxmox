@@ -1,0 +1,29 @@
+cluster:
+  network:
+      cni:
+        name: none
+  proxy:
+    disabled: true  
+  apiServer:
+    admissionControl:
+      - name: PodSecurity 
+        configuration:
+          defaults:
+              enforce: privileged 
+machine:
+  sysctls:
+    vm.nr_hugepages: "1024"
+  kernel:
+    modules:
+      - name: nvme_tcp
+      - name: vfio_pci
+      - name: uio_pci_generic
+  kubelet:
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
