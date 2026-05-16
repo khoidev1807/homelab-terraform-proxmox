@@ -1,0 +1,9 @@
+httproute:
+  enabled: true
+  parentRefs:
+    - name: cilium-gateway
+      namespace: longhorn-system
+  hostnames:
+    - "longhorn.109lcpalhcm.crabdance.com"
+  path: /
+  pathType: PathPrefix

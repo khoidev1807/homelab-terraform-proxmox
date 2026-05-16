@@ -47,7 +47,7 @@ talosctl bootstrap --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig
 
 rm -rf ~/.kube/*
 
-talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig ./talos-configs/config\
+talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfig ./talos-configs/talosconfig ./talos-configs/config
 
 
 6. Install Cilium with helm 
@@ -55,34 +55,12 @@ talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfi
 
 helm repo add cilium https://helm.cilium.io/
 
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.0/experimental-install.yaml
+
 helm repo update
 
-helm install \
-    cilium \
-    cilium/cilium \
-    --version 1.19.3 \
-    --namespace kube-system \
-    --set ipam.mode=kubernetes \
-    --set kubeProxyReplacement=true \
-    --set securityContext.capabilities.ciliumAgent="{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}" \
-    --set securityContext.capabilities.cleanCiliumState="{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}" \
-    --set cgroup.autoMount.enabled=false \
-    --set cgroup.hostRoot=/sys/fs/cgroup \
-    --set k8sServiceHost=localhost \
-    --set k8sServicePort=7445 \
-    --set=gatewayAPI.enabled=true \
-    --set=gatewayAPI.enableAlpn=true \
-    --set=gatewayAPI.enableAppProtocol=true
+helm install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/values/cilium.values.yaml 
 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_referencegrants.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_grpcroutes.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/v1.5.1/config/crd/standard/gateway.networking.k8s.io_tlsroutes.yaml
-
-   
 6. Set up worker nodes
 
 talosctl apply-config --insecure --nodes 192.168.11.12 --file ./talos-configs/worker.yaml
@@ -97,6 +75,9 @@ helm repo add longhorn https://charts.longhorn.io
 
 helm repo update
   
-helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.9.0
+helm install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/values/longhorn.values.yaml 
 
+8. set up custom crd
+
+kubectl apply -f ./resources/
 

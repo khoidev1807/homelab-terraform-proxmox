@@ -29,10 +29,8 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   disk {
     datastore_id = "datadrive"
     file_id      = proxmox_download_file.talos_vm_image.id
-    interface    = "scsi0"
-    file_format  = "raw"     
-    cache = "writethrough"            
-    iothread     = true
+    interface    = "scsi0"                       
+    file_format  = "raw"              
     discard      = "on"
     size         = 100
   }
@@ -63,8 +61,8 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   memory {
-    dedicated = 6144
-    floating = 6144
+    dedicated = 8192
+    
   }
 
 }
@@ -94,8 +92,6 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
     file_id      = proxmox_download_file.talos_vm_image.id
     interface    = "scsi0"
     file_format  = "raw"
-    cache        = "writethrough"
-    iothread     = true
     discard      = "on"
     size         = 100
   }
@@ -126,7 +122,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   memory {
-    dedicated = 8192
-    floating = 8192
+    dedicated = 16384 
+   
   }
 }

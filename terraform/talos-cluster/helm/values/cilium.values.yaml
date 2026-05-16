@@ -1,0 +1,56 @@
+# Cilium Helm Values
+# Generated from helm upgrade command targeting cilium/cilium v1.19.3
+
+# -- Configure IP Address Management mode.
+ipam:
+  mode: kubernetes
+
+# -- Enable kube-proxy replacement
+kubeProxyReplacement: true
+
+# -- Security context capabilities
+securityContext:
+  capabilities:
+    ciliumAgent:
+      - CHOWN
+      - KILL
+      - NET_ADMIN
+      - NET_RAW
+      - IPC_LOCK
+      - SYS_ADMIN
+      - SYS_RESOURCE
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    cleanCiliumState:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+
+# -- cgroup configuration
+cgroup:
+  autoMount:
+    enabled: false
+  hostRoot: /sys/fs/cgroup
+
+# -- Kubernetes API server endpoint
+k8sServiceHost: localhost
+k8sServicePort: 7445
+
+# -- Ingress controller
+ingressController:
+  enabled: true
+  loadbalancerMode: dedicated
+
+# -- L2 announcements
+l2announcements:
+  enabled: true
+
+# -- Default LoadBalancer IP Address Management
+defaultLBServiceIPAM: lbipam
+
+gatewayAPI:
+  enabled: true
+  enableAlpn: true
+  enableAppProtocol: true
