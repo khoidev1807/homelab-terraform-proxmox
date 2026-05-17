@@ -31,3 +31,4 @@ ssh-keys/**
 
 **/backups/**
 **/talos-configs/configs/**
+**/cloudflare-api-token-secret.yaml
