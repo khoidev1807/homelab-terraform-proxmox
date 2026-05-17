@@ -10,6 +10,9 @@ WHAT DOES THIS SOLVE ?
 we can programaticly create talos cluster with one controll-plane and n worker nodes with terraform
 
 1. Create a user for terraform in proxmox
+
+docs: https://registry.terraform.io/providers/bpg/proxmox/latest/docs
+
 do this in proxmox server
 
 pveum user add terraform@pve
@@ -29,7 +32,9 @@ ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdan
 
 3. Build talos iso with qemu-agent
 
-- https://factory.talos.dev/
+docs: https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/proxmox#proxmox
+
+use this link https://factory.talos.dev/
 
 - qemu-agent (for proxmox)
 - iscsi-tools (for longhorn)
@@ -37,9 +42,13 @@ ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdan
 
 4. Set up talos config with qemu-agent image latest version
 
+docs: https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/proxmox#proxmox
+
 talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs/configs/  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/initital-setup.yaml  --kubernetes-version 1.36.0
 
 5. Set up control plane node 
+
+docs: https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/proxmox#proxmox
 
 talosctl apply-config --insecure --nodes 192.168.11.11 --file ./talos-configs/configs/controlplane.yaml
 
@@ -51,6 +60,9 @@ talosctl kubeconfig --nodes 192.168.11.11 --endpoints 192.168.11.11 --talosconfi
 
 6. Install Cilium with helm 
 
+docs: https://docs.siderolabs.com/kubernetes-guides/cni/deploying-cilium#deploy-cilium-cni
+      https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/gateway-api/
+
 
 helm repo add cilium https://helm.cilium.io/
 
@@ -59,6 +71,8 @@ kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/re
 helm repo update
 
 helm upgrade --install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/values/cilium.values.yaml 
+
+kubectl apply -f ./resources/cilium/
 
 6. Set up worker nodes
 
@@ -69,6 +83,8 @@ talosctl apply-config --insecure --nodes 192.168.11.13 --file ./talos-configs/co
 talosctl apply-config --insecure --nodes 192.168.11.14 --file ./talos-configs/configs/worker.yaml
 
 7. set up metrics-server and kubelet-serving-cert-approver
+
+docs: https://docs.siderolabs.com/kubernetes-guides/monitoring-and-observability/deploy-metrics-server#deploy-the-metrics-server
 
 talosctl machineconfig patch ./talos-configs/configs/controlplane.yaml --patch @./talos-configs/patches/post-setup.yaml -o ./talos-configs/configs/controlplane.yaml
 
@@ -89,6 +105,15 @@ kubectl apply -f https://raw.githubusercontent.com/alex1989hu/kubelet-serving-ce
 
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
+8. Setup Cert Manager
+
+helm repo add jetstack https://charts.jetstack.io 
+
+helm repo update
+
+helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.2 -f ./helm/values/certmanager.values.yaml 
+
+kubectl apply -f ./resources/certmanager/
 
 8. Set up longhorn
 
@@ -98,10 +123,7 @@ helm repo update
   
 helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/values/longhorn.values.yaml 
 
-9. set up custom crd
-
-kubectl apply -f ./resources/
-
+kubectl apply -f ./resources/longhorn/
 
 
  

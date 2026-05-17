@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-webui-gateway-certficate
+  namespace: longhorn-system
+spec:
+  secretName: longhorn-webui-gateway-certificate-secret
+  issuerRef:
+    name: cloudflare-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - longhorn.nguyenvietkhoi.io.vn
