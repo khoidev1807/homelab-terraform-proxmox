@@ -70,9 +70,9 @@ kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/re
 
 helm repo update
 
-helm upgrade --install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/values/cilium.values.yaml 
+helm upgrade --install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/cilium/cilium.values.yaml 
 
-kubectl apply -f ./resources/cilium/
+kubectl apply -f ./helm/cilium/resources/cilium/
 
 6. Set up worker nodes
 
@@ -98,7 +98,6 @@ talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoi
 
 talosctl --talosconfig ./talos-configs/configs/talosconfig apply-config --endpoints 192.168.11.14 --nodes 192.168.11.14 --file ./talos-configs/configs/worker.yaml
 
-
 kubectl certificate approve $(kubectl get csr -o name)
 
 kubectl apply -f https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
@@ -111,9 +110,9 @@ helm repo add jetstack https://charts.jetstack.io
 
 helm repo update
 
-helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.2 -f ./helm/values/certmanager.values.yaml 
+helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.2 -f ./helm/certmanager/certmanager.values.yaml 
 
-kubectl apply -f ./resources/certmanager/
+kubectl apply -f ./helm/certmanager/resources/certmanager/
 
 8. Set up longhorn
 
@@ -121,9 +120,9 @@ helm repo add longhorn https://charts.longhorn.io
 
 helm repo update
   
-helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/values/longhorn.values.yaml 
+helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/longhorn/longhorn.values.yaml 
 
-kubectl apply -f ./resources/longhorn/
+kubectl apply -f ./helm/longhorn/resources/longhorn/
 
 
  

@@ -5,6 +5,9 @@ metadata:
   namespace: longhorn-system
 spec:
   gatewayClassName: cilium
+  addresses:
+  - type: IPAddress
+    value: "192.168.11.151"
   listeners:
   - name: http
     protocol: HTTP
