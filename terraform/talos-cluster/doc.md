@@ -72,7 +72,7 @@ helm repo update
 
 helm upgrade --install cilium cilium/cilium --version 1.19.3 --namespace kube-system -f ./helm/cilium/cilium.values.yaml 
 
-kubectl apply -f ./helm/cilium/resources/cilium/
+kubectl apply -f ./helm/cilium/resources/
 
 6. Set up worker nodes
 
@@ -112,7 +112,7 @@ helm repo update
 
 helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.2 -f ./helm/certmanager/certmanager.values.yaml 
 
-kubectl apply -f ./helm/certmanager/resources/certmanager/
+kubectl apply -f ./helm/certmanager/resources/
 
 8. Set up longhorn
 
@@ -122,7 +122,7 @@ helm repo update
   
 helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace --version 1.11.2 -f ./helm/longhorn/longhorn.values.yaml 
 
-kubectl apply -f ./helm/longhorn/resources/longhorn/
+kubectl apply -f ./helm/longhorn/resources/
 
 
  
