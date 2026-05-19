@@ -1,0 +1,44 @@
+service:
+   annotations:
+    lbipam.cilium.io/ips: "192.168.11.153"
+    lbipam.cilium.io/sharing-key: "omada"
+    lbipam.cilium.io/sharing-cross-namespace: "true"
+
+config:
+  tlsSecretName: omada-controller-ingress-certificate
+  sslCertName: tls.crt
+  sslKeyName: tls.key
+  webConfigOverride: true
+
+ingress:
+  enabled: true
+  className: "cilium"
+  annotations:
+    lbipam.cilium.io/ips: "192.168.11.153"
+    ingress.cilium.io/tls-passthrough: "enabled"    
+    lbipam.cilium.io/sharing-cross-namespace: "true"
+    cert-manager.io/cluster-issuer: "cloudflare-cluster-issuer"
+    lbipam.cilium.io/sharing-key: "omada"
+  managementHosts:
+    - host: omada.nguyenvietkhoi.io.vn
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: omada-controller-ingress-certificate
+      hosts:
+        - omada.nguyenvietkhoi.io.vn
+
+persistence:
+  data:
+    enabled: true
+    storageClassName: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  logs:
+    enabled: true
+    storageClassName: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
