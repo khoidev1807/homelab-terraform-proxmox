@@ -83,6 +83,17 @@ data:
             description: Storage management for Kubernetes
             icon: longhorn.png
             siteMonitor: https://longhorn.nguyenvietkhoi.io.vn/
+    - Monitoring:
+        - Prometheus:
+            href: https://prometheus.nguyenvietkhoi.io.vn/
+            description: Monitoring and alerting toolkit
+            icon: prometheus.png
+            siteMonitor: https://prometheus.nguyenvietkhoi.io.vn/
+        - Grafana:
+            href: https://grafana.nguyenvietkhoi.io.vn/
+            description: Analytics and monitoring platform
+            icon: grafana.png
+            siteMonitor: https://grafana.nguyenvietkhoi.io.vn/
   widgets.yaml: |
     - search:
         provider: google
