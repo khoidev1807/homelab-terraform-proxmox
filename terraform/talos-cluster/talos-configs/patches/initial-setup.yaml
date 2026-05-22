@@ -10,6 +10,13 @@ cluster:
         configuration:
           defaults:
               enforce: privileged 
+  controllerManager:
+    extraArgs:
+      bind-address: 0.0.0.0
+  scheduler:
+    extraArgs:
+      bind-address: 0.0.0.0
+      
 machine:
   sysctls:
     vm.nr_hugepages: "1024"
