@@ -1,0 +1,102 @@
+# kube-prometheus-stack-values.yaml
+
+# Prometheus configuration
+prometheus:
+  prometheusSpec:
+    # Storage for metrics
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+
+    # Retention settings
+    retention: 30d
+    retentionSize: "15GB"
+    # Scrape all ServiceMonitors in all namespaces
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+  ingress:
+    enabled: true
+    ingressClassName: cilium
+    annotations:
+      lbipam.cilium.io/ips: "192.168.11.156"
+    hosts:
+      - prometheus.nguyenvietkhoi.io.vn
+    paths:
+      - /
+    pathType: Prefix
+    tls:
+      - secretName: prometheus-certificate-secret
+        hosts:
+          - prometheus.nguyenvietkhoi.io.vn
+
+# Grafana configuration
+grafana:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClassName: longhorn
+  adminPassword: "admin"
+  # Additional data sources
+  additionalDataSources:
+  - name: Alertmanager
+    type: alertmanager
+    url: http://kube-prometheus-stack-alertmanager.monitoring:9093
+    access: proxy
+    jsonData:
+      implementation: prometheus
+  ingress:
+    enabled: true
+    ingressClassName: cilium
+    annotations:
+      lbipam.cilium.io/ips: "192.168.11.155"
+    hosts:
+      - grafana.nguyenvietkhoi.io.vn
+    path: /
+    pathType: Prefix
+    tls:
+      - secretName: grafana-certificate-secret
+        hosts:
+          - grafana.nguyenvietkhoi.io.vn
+# Alertmanager configuration
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+# Node exporter - runs on all nodes including Talos control plane
+nodeExporter:
+  enabled: true
+
+# kube-state-metrics
+kubeStateMetrics:
+  enabled: true
+
+# Talos-specific: kubelet configuration
+kubelet:
+  enabled: true
+  serviceMonitor:
+    # Talos exposes kubelet metrics on a different path
+    cAdvisorMetricRelabelings:
+    - sourceLabels: [__name__]
+      regex: 'container_cpu_cfs_throttled_seconds_total'
+      action: drop
+
+# Talos-specific: etcd monitoring
+kubeEtcd:
+  enabled: true
+  service:
+    enabled: true
+    port: 2381
+    targetPort: 2381
