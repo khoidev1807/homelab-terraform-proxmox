@@ -93,10 +93,3 @@ kubelet:
       regex: 'container_cpu_cfs_throttled_seconds_total'
       action: drop
 
-# Talos-specific: etcd monitoring
-kubeEtcd:
-  enabled: true
-  service:
-    enabled: true
-    port: 2381
-    targetPort: 2381
