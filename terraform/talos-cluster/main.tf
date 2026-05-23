@@ -94,7 +94,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
     interface    = "scsi0"
     file_format  = "raw"
     discard      = "on"
-    size         = 100
+    size         = 200
     cache        = "writethrough"
   }
 
