@@ -24,7 +24,7 @@ do this on local development machine
 
 ssh-keygen -t ed25519 -f ./ssh-keys/proxmox_terraform -N ""
 
-ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.109lcpalhcm.crabdance.com
+ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.nguyenvietkhoi.io.vn
 
 3. install omada-controller after server provisoned
 do this in the vm
