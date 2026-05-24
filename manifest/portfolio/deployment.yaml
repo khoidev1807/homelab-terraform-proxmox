@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: portfolio
-        image: khoidev1807/nguyenvietkhoi:1.0
+        image: khoidev1807/nguyenvietkhoi:1.0.1
         ports:
           - containerPort: 3000
         
