@@ -1,0 +1,1 @@
+kubectl create namespace portfolio && kubectl apply -n portfolio -f ./manifest/portfolio/

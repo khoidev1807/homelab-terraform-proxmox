@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: portfolio-gateway
+  namespace: portfolio
+spec:
+  gatewayClassName: cilium
+  addresses:
+  - type: IPAddress
+    value: "192.168.11.157"
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    hostname: "portfolio.nguyenvietkhoi.io.vn"
+  - name: https
+    port: 443
+    protocol: HTTPS
+    hostname: "portfolio.nguyenvietkhoi.io.vn"
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - kind: Secret
+        name: portfolio-certificate-secret
