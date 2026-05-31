@@ -11,11 +11,10 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 20Gi
+              storage: 100Gi
 
     # Retention settings
     retention: 30d
-    retentionSize: "15GB"
     # Scrape all ServiceMonitors in all namespaces
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorSelectorNilUsesHelmValues: false
