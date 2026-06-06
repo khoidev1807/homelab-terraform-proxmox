@@ -1,5 +1,5 @@
 resource "proxmox_download_file" "talos_vm_image" {
-  node_name    = "node1"
+  node_name    = "proxmox"
   content_type = "iso"
   datastore_id = "local"
   file_name    = "talos-amd64-secureboot.iso"
@@ -10,7 +10,7 @@ resource "proxmox_download_file" "talos_vm_image" {
 resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   name = "talos-control-plane"
 
-  node_name = "node1"
+  node_name = "proxmox"
   vm_id     = 101
   machine   = "q35"
   bios      = "ovmf"
@@ -27,14 +27,25 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
 
 
   disk {
-    datastore_id = "datadrive"
+    datastore_id = "local-lvm"
     file_id      = proxmox_download_file.talos_vm_image.id
     interface    = "scsi0"
+    file_format  = "raw"
+    discard      = "on"
+    size         = 30
+    cache        = "writethrough"
+  }
+
+  disk {
+    datastore_id = "data-pool"
+    interface    = "scsi1"
     file_format  = "raw"
     discard      = "on"
     size         = 100
     cache        = "writethrough"
   }
+
+  
 
   scsi_hardware = "virtio-scsi-pci"
 
@@ -62,7 +73,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   memory {
-    dedicated = 12288
+    dedicated = 16384
     
   }
 
@@ -73,7 +84,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   count = 3
 
   name      = "talos-worker-${count.index + 1}"
-  node_name = "node1"
+  node_name = "proxmox"
   vm_id     = 102 + count.index  
   machine   = "q35"
   bios      = "ovmf"
@@ -89,12 +100,22 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   disk {
-    datastore_id = "datadrive"
+    datastore_id = "local-lvm"
     file_id      = proxmox_download_file.talos_vm_image.id
     interface    = "scsi0"
     file_format  = "raw"
     discard      = "on"
-    size         = 200
+    size         = 30
+    cache        = "writethrough"
+  }
+
+
+   disk {
+    datastore_id = "data-pool"
+    interface    = "scsi1"
+    file_format  = "raw"
+    discard      = "on"
+    size         = 500
     cache        = "writethrough"
   }
 
@@ -124,7 +145,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   memory {
-    dedicated = 16384
+    dedicated = 12288
    
   }
 }

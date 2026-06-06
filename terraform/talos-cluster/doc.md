@@ -28,7 +28,7 @@ do this on local development machine
 
 ssh-keygen -t ed25519 -f ./ssh-keys/proxmox_terraform -N ""
 
-ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.proxmox.nguyenvietkhoi.io.vn
+ssh-copy-id -i ./ssh-keys/proxmox_terraform.pub root@proxmox.nguyenvietkhoi.io.vn
 
 3. Build talos iso with qemu-agent
 
@@ -44,7 +44,7 @@ use this link https://factory.talos.dev/
 
 docs: https://docs.siderolabs.com/talos/v1.13/platform-specific-installations/virtualized-platforms/proxmox#proxmox
 
-talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs/configs/  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/initital-setup.yaml  --kubernetes-version 1.36.0
+talosctl gen config talos-proxmox-cluster https://192.168.11.11:6443 --output-dir ./talos-configs/configs/  --install-image factory.talos.dev/nocloud-installer-secureboot/861a91152157e97c900df9ca48fe4a26f19f19795e081386751bb7994c16800f:v1.13.0 --config-patch @./talos-configs/patches/initial-setup.yaml  --kubernetes-version 1.36.0
 
 5. Set up control plane node 
 

@@ -5,7 +5,7 @@ resource "tls_private_key" "omada_controller_ssh_key" {
 
 
 resource "proxmox_download_file" "ubuntu_noble_cloud_image" {
-  node_name    = "node1"
+  node_name    = "proxmox"
   content_type = "iso"
   datastore_id = "local"
   file_name    = "noble-server-cloudimg-amd64.img"
@@ -17,7 +17,7 @@ resource "proxmox_download_file" "ubuntu_noble_cloud_image" {
 resource "proxmox_virtual_environment_vm" "omada_controller" {
   name = "omada-controller"
 
-  node_name = "node1"
+  node_name = "proxmox"
   vm_id     = 100
   machine   = "q35"
   bios      = "ovmf"
@@ -75,7 +75,7 @@ resource "proxmox_virtual_environment_vm" "omada_controller" {
 resource "proxmox_virtual_environment_file" "user_data_cloud_config" {
   content_type = "snippets"
   datastore_id = "local"
-  node_name    = "node1"
+  node_name    = "proxmox"
 
   source_raw {
     data      = <<EOF
