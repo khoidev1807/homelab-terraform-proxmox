@@ -38,7 +38,7 @@ grafana:
   enabled: true
   persistence:
     enabled: true
-    size: 10Gi
+    size: 50Gi
     storageClassName: longhorn
   adminPassword: "admin"
   # Additional data sources
@@ -72,7 +72,7 @@ alertmanager:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
+              storage: 50Gi
 
 # Node exporter - runs on all nodes including Talos control plane
 nodeExporter:
