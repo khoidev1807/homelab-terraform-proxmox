@@ -62,6 +62,17 @@ grafana:
       - secretName: grafana-certificate-secret
         hosts:
           - grafana.nguyenvietkhoi.io.vn
+kubeEtcd:
+  enabled: true
+  endpoints:
+    - 192.168.11.11
+  service:
+    enabled: true
+    port: 2381
+    targetPort: 2381
+  serviceMonitor:
+    scheme: http
+    insecureSkipVerify: true
 # Alertmanager configuration
 alertmanager:
   alertmanagerSpec:
