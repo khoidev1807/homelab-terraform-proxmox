@@ -32,3 +32,4 @@ ssh-keys/**
 **/backups/**
 **/talos-configs/configs/**
 **/cloudflare-api-token-secret.yaml
+manifest/karakeep/karakeep-secret.yaml
