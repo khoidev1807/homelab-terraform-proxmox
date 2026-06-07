@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: karakeep-certficate
+  namespace: karakeep
+spec:
+  secretName: karakeep-certificate-secret
+  issuerRef:
+    name: cloudflare-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - karakeep.nguyenvietkhoi.io.vn

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromium
+  namespace: karakeep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromium
+  template:
+    metadata:
+      labels:
+        app: chromium
+    spec:
+      containers:
+        - name: chromium
+          image: browserless/chrome:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DISABLE_DEV_SHM_USAGE
+              value: "true"
+            - name: HIDE_SCROLLBARS
+              value: "true"
