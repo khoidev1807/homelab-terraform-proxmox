@@ -1,0 +1,47 @@
+kind: Deployment
+replicaCount: 3
+
+service:
+  type: LoadBalancer
+  annotations:
+    lbipam.cilium.io/ips: "192.168.11.158"
+
+config: |
+  global
+    log stdout format raw local0
+    maxconn 4096
+
+  defaults
+    mode tcp
+    log global
+    timeout connect 5s
+    timeout client 50s
+    timeout server 50s
+
+  frontend https_in
+    bind *:443
+    mode tcp
+    tcp-request inspect-delay 5s
+    tcp-request content accept if { req_ssl_hello_type 1 }
+    use_backend bk_portfolio if { req_ssl_sni -i portfolio.nguyenvietkhoi.io.vn }
+    default_backend bk_portfolio
+
+  frontend stats
+    bind *:1024
+    mode http
+    http-request use-service prometheus-exporter if { path /metrics }
+    stats enable
+    stats uri /stats
+
+  backend bk_portfolio
+    mode tcp
+    server portfolio 192.168.11.157:443 check
+
+
+serviceMonitor:
+  enabled: true
+  endpoints:
+    - port: stat
+      path: /metrics
+      scheme: http
+      interval: 30s
