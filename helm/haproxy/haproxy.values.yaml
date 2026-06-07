@@ -24,6 +24,7 @@ config: |
     tcp-request inspect-delay 5s
     tcp-request content accept if { req_ssl_hello_type 1 }
     use_backend bk_portfolio if { req_ssl_sni -i portfolio.nguyenvietkhoi.io.vn }
+    use_backend bk_karakeep if { req_ssl_sni -i karakeep.nguyenvietkhoi.io.vn }
     default_backend bk_portfolio
 
   frontend stats
@@ -36,6 +37,10 @@ config: |
   backend bk_portfolio
     mode tcp
     server portfolio 192.168.11.157:443 check
+
+  backend bk_karakeep
+    mode tcp
+    server portfolio 192.168.11.159:443 check
 
 
 serviceMonitor:
