@@ -16,7 +16,9 @@ cluster:
   scheduler:
     extraArgs:
       bind-address: 0.0.0.0
-      
+  etcd:
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
 machine:
   sysctls:
     vm.nr_hugepages: "1024"
