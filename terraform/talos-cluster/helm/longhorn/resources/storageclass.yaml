@@ -1,7 +1,10 @@
+allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: longhorn-retain
+parameters:
+  staleReplicaTimeout: "30"
 provisioner: driver.longhorn.io
-reclaimPolicy: Retain   
+reclaimPolicy: Retain
 volumeBindingMode: Immediate
