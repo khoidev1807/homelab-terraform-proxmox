@@ -36,16 +36,6 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
     cache        = "writethrough"
   }
 
-  disk {
-    datastore_id = "data-pool"
-    interface    = "scsi1"
-    file_format  = "raw"
-    discard      = "on"
-    size         = 100
-    cache        = "writethrough"
-  }
-
-  
 
   scsi_hardware = "virtio-scsi-pci"
 
@@ -59,7 +49,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   cpu {
-    cores = 4
+    cores = 2
     type = "host"
   }
 
@@ -73,7 +63,7 @@ resource "proxmox_virtual_environment_vm" "talos_control_plane" {
   }
 
   memory {
-    dedicated = 16384
+    dedicated = 8192
     
   }
 
@@ -115,7 +105,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
     interface    = "scsi1"
     file_format  = "raw"
     discard      = "on"
-    size         = 500
+    size         = 300
     cache        = "writethrough"
   }
 
@@ -131,7 +121,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   cpu {
-    cores = 6
+    cores = 4
     type  = "host"
   }
 
@@ -145,7 +135,7 @@ resource "proxmox_virtual_environment_vm" "talos_worker" {
   }
 
   memory {
-    dedicated = 12288
+    dedicated = 8192
    
   }
 }
